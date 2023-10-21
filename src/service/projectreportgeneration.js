@@ -5,7 +5,8 @@ const SingleProjectReportGeneration = require("./reportstrategy/singleProjectRep
 const projects = require("../model/project");
 const DocxMerger = require("docx-merger");
 const fs = require('fs');
-
+const os = require('os');
+const path = require('path');
 
 const generateProjectReport = async function generate(projectId,sectionImageProperties,companyName,reportType,
     reportFormat, fileName)
@@ -31,8 +32,14 @@ const generateProjectReport = async function generate(projectId,sectionImageProp
                     fs.unlinkSync(filechunk);
                 }              
             });
+
+
             var docx = new DocxMerger({},fileList);
-            const docFilePath = `${fileName}.docx`;
+            const outputDir = path.join(os.tmpdir(), "projectreportfiles")
+            if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir);
+            }
+            const docFilePath = path.join(outputDir,`${fileName}.docx`);
             docx.save('nodebuffer', function (data) {
             
                 console.log('inside document save');

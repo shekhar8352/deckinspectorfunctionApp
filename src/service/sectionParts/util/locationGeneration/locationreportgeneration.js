@@ -10,7 +10,7 @@ const invasiveSections  = require("../../../../model/invasiveSections");
 const conclusiveSections  = require("../../../../model/conclusiveSections");
 const blobManager = require("../../../../database/uploadimage");
 const jo = require('jpeg-autorotate');
-
+const os = require('os');
 
 const generateDocReportForLocation = async function (locationId,companyName, sectionImageProperties, reportType,subprojectName='') {
   try {
@@ -37,16 +37,16 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
       if (companyName==='Wicr') {
        if (subprojectName=='') {
          
-          template = fs.readFileSync(`${__dirname}\\Wicr2AllData.docx`);
+          template = fs.readFileSync(path.join(__dirname,'Wicr2AllData.docx'));
         }
         else{
-          template = fs.readFileSync(`${__dirname}\\WicrAllData.docx`);
+          template = fs.readFileSync(path.join(__dirname,'WicrAllData.docx'));
         }
       }else{
        if (subprojectName=='') {
-          template = fs.readFileSync(`${__dirname}\\Deck2AllData.docx`);
+          template = fs.readFileSync(path.join(__dirname,'Deck2AllData.docx'));
         }else{
-          template = fs.readFileSync(`${__dirname}\\DeckAllData.docx`);
+          template = fs.readFileSync(path.join(__dirname,'DeckAllData.docx'));
 
         }
       }
@@ -330,7 +330,11 @@ const getLocationDoc = async function(sectionId,template,sectionDocValues){
         }, 
     }
   });
-    var filename = sectionId +'.docx'
+  const outputDir = path.join(os.tmpdir(), "projectreportfiles")
+            if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir);
+            }
+    var filename = path.join(outputDir,`${sectionId}.docx`);
     fs.writeFileSync(filename, buffer);
     //console.log(filename);
     return filename;
