@@ -37,16 +37,16 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
       if (companyName==='Wicr') {
        if (subprojectName=='') {
          
-          template = fs.readFileSync(`${__dirname}\Wicr2AllData.docx`);
+          template = fs.readFileSync(`${__dirname}\\Wicr2AllData.docx`);
         }
         else{
-          template = fs.readFileSync(`${__dirname}\WicrAllData.docx`);
+          template = fs.readFileSync(`${__dirname}\\WicrAllData.docx`);
         }
       }else{
        if (subprojectName=='') {
-          template = fs.readFileSync(`${__dirname}\Deck2AllData.docx`);
+          template = fs.readFileSync(`${__dirname}\\Deck2AllData.docx`);
         }else{
-          template = fs.readFileSync(`${__dirname}\DeckAllData.docx`);
+          template = fs.readFileSync(`${__dirname}\\DeckAllData.docx`);
 
         }
       }
