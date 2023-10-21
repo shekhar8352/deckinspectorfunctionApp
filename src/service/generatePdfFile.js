@@ -1,3 +1,4 @@
+"use strict";
 const puppeteer = require('puppeteer');
 const puppeteerConfig = require('../puppeteer.config.cjs');
 
@@ -41,7 +42,8 @@ const generatePdfFile = async function (pdfFileName ,htmlString,companyName) {
         console.log("Error is " + error);
     }
 };
-exports.generatePdfFile = generatePdfFile;
+module.exports = {generatePdfFile};
+
 
 
 

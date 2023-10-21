@@ -1,15 +1,21 @@
 {
-  "name": "deckinspectorfunctionapp",
+  "name": "web-services",
   "version": "1.0.0",
   "description": "",
-  "scripts": {
-    "start": "func start",
-    "test": "echo \"No tests yet...\""
+  "main": "index.js",
+  "engines": {
+    "node": "18.x"
   },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js && node node_modules/puppeteer/install.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@azure/storage-blob": "^12.16.0",
-    "@azure/functions": "^4.0.0",
     "@azure/identity": "^3.1.3",
+    "@azure/storage-blob": "^12.13.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
@@ -37,6 +43,5 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.0",
     "uuid": "^9.0.1"
-  },
-  "main": "src/functions/*.js"
+  }
 }

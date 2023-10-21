@@ -1,5 +1,5 @@
+"use strict";
 const { generatePdfFile } = require("./generatePdfFile");
-const {  generateDocFile } = require("./generateDocFile");
 const ReportGeneration = require("./reportstrategy/reportGeneration.js")
 const SingleProjectReportGeneration = require("./reportstrategy/singleProjectReportGeneration.js")
 const projects = require("../model/project");
@@ -46,7 +46,7 @@ const generateProjectReport = async function generate(projectId,sectionImageProp
         console.log(err);
         // callback("");
     }
-}
+};
 
 async function getProjectDoc(project, sectionImageProperties,companyName, reportType,reportFormat='pdf') {
     if (project.data.item.projecttype === "singlelevel") {
@@ -55,7 +55,7 @@ async function getProjectDoc(project, sectionImageProperties,companyName, report
     else if (project.data.item.projecttype  === "multilevel") {
        return await ReportGeneration.generateReportDoc(project,companyName, sectionImageProperties, reportType);
     }
-}
+};
 
 async function getProjectHtml(project, sectionImageProperties, reportType) {
     if (project.data.item.projecttype === "singlelevel") {
@@ -64,7 +64,7 @@ async function getProjectHtml(project, sectionImageProperties, reportType) {
     else if (project.data.item.projecttype  === "multilevel") {
        return await ReportGeneration.generateReportHtml(project, sectionImageProperties, reportType);
     }
-}
+};
 
 module.exports = { generateProjectReport,getProjectHtml};
 

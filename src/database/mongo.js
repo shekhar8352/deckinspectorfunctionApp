@@ -36,5 +36,5 @@ var Connect = async function () {
 
 module.exports = {
     Connect,
-    GetConnectionString: getDBConnectionString
+    getDBConnectionString
 };

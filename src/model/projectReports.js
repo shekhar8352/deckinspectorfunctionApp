@@ -4,6 +4,7 @@ const { ObjectId } = require('mongodb');
 var mongo = require('../database/mongo');
 const Role = require('./role');
 
+
 var addProjectReport = function (projectReport, callback) {
     mongo.ProjectReports.insertOne({project_id:projectReport.project_id,url: projectReport.url,name:projectReport.name,timestamp:projectReport.timestamp, uploader: projectReport.uploader}, {w: 1}, function (err, result) {
         if (err) {
@@ -14,6 +15,21 @@ var addProjectReport = function (projectReport, callback) {
         }
         callback(null, result);
     });
+};
+
+var updateProjectReport = async function  (projectReport, callback) {
+    
+    var result = await mongo.ProjectReports.updateOne({ _id: projectReport._id }, { $set: projectReport },{upsert:true});
+    
+    if (result.modifiedCount==1) {
+        callback(null,result);
+    }
+    else{
+        var error = new Error("UpdateProjectReport()." );
+        error.status = 500;
+        callback (error);
+        return;
+    }   
 };
 
 var getProjectReportsbyProjectId = async function (project_id, callback) {
@@ -52,5 +68,6 @@ var removeReport = async  function (id, callback) {
 module.exports = {
     addProjectReport: addProjectReport,
     getProjectReportsbyProjectId: getProjectReportsbyProjectId,
-    removeReport: removeReport
+    removeReport: removeReport,
+    updateProjectReport
 };

@@ -16,18 +16,21 @@ class ReportGeneration{
     async generateReportDoc(project,companyName,sectionImageProperties,reportType){
         try{
          //   console.time("generateReportDocs");
+            
             const promises = [];
             const reportDocList = []; 
             project.data.item.projectHeader = this.getProjectHeader(reportType);
             let projectHtml = ['projectheader.docx'];
             //create project header docx
             var template;
+            
             var createdBy='WICR  Waterproofing & Construction';
 
             if (companyName=='Wicr') {
-                template = fs.readFileSync('WicrProjectHeader.docx');
+                var templatePath = `${__dirname}/WicrProjectHeader.docx`;
+                template = fs.readFileSync(templatePath);
             }else{
-                createdBy ='Deck Inspectors Inc.';
+                createdBy ='E3 Inspection Reporting Solutions.';
                 template = fs.readFileSync('DeckProjectHeader.docx');
             }
             

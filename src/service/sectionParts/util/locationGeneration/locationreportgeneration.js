@@ -16,6 +16,7 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
   try {
     const sectionDataDoc =
     [];
+    //console.log(__dirname);
     const location = await locations.getLocationById(locationId);
 
     if (!location.data) {
@@ -35,16 +36,18 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
       var template;
       if (companyName==='Wicr') {
        if (subprojectName=='') {
-          template = fs.readFileSync('Wicr2AllData.docx');
+         
+          template = fs.readFileSync(`${__dirname}/Wicr2AllData.docx`);
         }
         else{
-          template = fs.readFileSync('WicrAllData.docx');
+          template = fs.readFileSync(`${__dirname}/WicrAllData.docx`);
         }
       }else{
        if (subprojectName=='') {
-          template = fs.readFileSync('Deck2AllData.docx');
+          template = fs.readFileSync(`${__dirname}/Deck2AllData.docx`);
         }else{
-          template = fs.readFileSync('DeckAllData.docx');
+          template = fs.readFileSync(`${__dirname}/DeckAllData.docx`);
+
         }
       }
       if (reportType === projectReportType.INVASIVEONLY || reportType === projectReportType.INVASIVEVISUAL) {
@@ -304,7 +307,7 @@ const getLocationDoc = async function(sectionId,template,sectionDocValues){
                 return;
               }
               
-              console.log(imageurl);
+              //console.log(imageurl);
                 var extension  = path.extname(imageurl);
                 if (extension==='.HEIC') {
                   extension='.jpg';
@@ -329,6 +332,7 @@ const getLocationDoc = async function(sectionId,template,sectionDocValues){
   });
     var filename = sectionId +'.docx'
     fs.writeFileSync(filename, buffer);
+    //console.log(filename);
     return filename;
   } catch (error) {
     console.log(error);

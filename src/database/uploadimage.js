@@ -1,16 +1,9 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
 require("dotenv").config();
 
-// containerName: string
-// blobName: string, includes file extension if provided
-// localFileWithPath: fully qualified path and file name
-// uploadOptions: {
-//   metadata: { reviewer: 'john', reviewDate: '2022-04-01' }, 
-//   tags: {project: 'xyz', owner: 'accounts-payable'}
-// }
+
 const account = process.env.AZURE_STORAGE_ACCOUNT_NAME;
 //const defaultAzureCredential = new DefaultAzureCredential();
-
 const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.STORAGE_CONNECTION_STRING);
 const blobServiceClientOld = BlobServiceClient.fromConnectionString(process.env.OLD_STORAGE_CONNECTION_STRING);
 async function uploadFile(containerName, blobName, localFileWithPath, uploadOptions) {
@@ -19,6 +12,8 @@ async function uploadFile(containerName, blobName, localFileWithPath, uploadOpti
     
     if (!account) return ('{"error":"Azure Storage accountName not found"}');
     // Get a reference to a container
+    
+
     const containerClient = blobServiceClient.getContainerClient(containerName);
     
       const options = {
@@ -36,9 +31,11 @@ async function uploadFile(containerName, blobName, localFileWithPath, uploadOpti
     return (`{"error": "${err.message}"}`);
   }
 
-}
+};
 
-async function getBlobBufferFromOld(blobName,containerName) {
+ async function getBlobBufferFromOld(blobName,containerName) {
+  
+
   const containerClient = blobServiceClientOld.getContainerClient(containerName);
   blobName= blobName.replace('%20',' ');
   const blobClient = containerClient.getBlobClient(blobName);
@@ -52,8 +49,10 @@ async function getBlobBufferFromOld(blobName,containerName) {
   
   
   return downloaded;
-}
+};
 async function getBlobBuffer(blobName,containerName) {
+  const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.STORAGE_CONNECTION_STRING);
+
   const containerClient = blobServiceClient.getContainerClient(containerName);
   blobName= blobName.replace('%20',' ');
   const blobClient = containerClient.getBlobClient(blobName);
@@ -67,7 +66,7 @@ async function getBlobBuffer(blobName,containerName) {
   
   
   return downloaded;
-}
+};
 
   // [Node.js only] A helper method used to read a Node.js readable stream into a Buffer
 async function streamToBuffer(readableStream) {
@@ -81,6 +80,11 @@ async function streamToBuffer(readableStream) {
     });
     readableStream.on("error", reject);
   });
-}
-module.exports = { uploadFile ,getBlobBuffer,getBlobBufferFromOld};
+};
+
+module.exports = { 
+  uploadFile,
+  getBlobBuffer,
+  getBlobBufferFromOld
+};
 
