@@ -10,7 +10,7 @@ const template = fs.readFileSync(filePath, 'utf8');
 const docxTemplate = require('docx-templates');
 const blobManager = require("../../database/uploadimage");
 const jo = require('jpeg-autorotate');
-
+const os = require('os');
 
 class ReportGeneration{
     async generateReportDoc(project,companyName,sectionImageProperties,reportType){
@@ -79,9 +79,12 @@ class ReportGeneration{
                
               },
             });
-
-            fs.writeFileSync(`${__dirname}\\projectheader.docx`, buffer);
-            let projectHtml = [`${__dirname}\\projectheader.docx`];
+            const outputDir = path.join(os.tmpdir(), "projectreportfiles")
+            if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir);
+            }
+            fs.writeFileSync(`${outputDir}\\projectheader.docx`, buffer);
+            let projectHtml = [`${outputDir}\\projectheader.docx`];
             const orderedProjects = this.reOrderProjects(project.data.item.children);
             for (let key in orderedProjects) {
                 const promise = this.getReportDoc(orderedProjects[key],companyName,sectionImageProperties,reportType)
