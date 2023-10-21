@@ -86,8 +86,8 @@ app.http('generateReport', {
         };
             const newContainerName = containerName.replace(/\s+/g, '').toLowerCase();
             const fileName = `${projectName}_${reportType}_${timestamp}.${reportFormat}`;
-            fileName = fileName.replace(/\s+/g, '').toLowerCase();
-            var result = await uploadBlob.uploadFile(newContainerName, fileName, absolutePath, uploadOptions);
+            const newfileName = fileName.replace(/\s+/g, '').toLowerCase();
+            var result = await uploadBlob.uploadFile(newContainerName, newfileName, absolutePath, uploadOptions);
             var response = JSON.parse(result);
             if (response.error) {
                 responseError = new ErrorResponse(500, 'Internal server error', result.error);
