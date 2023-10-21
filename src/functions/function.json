@@ -1,6 +1,7 @@
 {
     "bindings": [
       {
+        "name": "req",
         "type": "httpTrigger",
         "direction": "in",
         "route": "generateReport",
@@ -8,7 +9,8 @@
       },
       {
         "type": "http",
-        "direction": "out"
+        "direction": "out",
+        "name": "res"
       }
     ]
   }

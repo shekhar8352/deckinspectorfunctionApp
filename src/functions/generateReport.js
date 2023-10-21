@@ -62,15 +62,13 @@ app.http('generateReport', {
                     context.log(result)
                 }
             });
-            context.res= {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+            context.res= {               
                 status: 200,
                 body: {
                     message: 'Generating report'
                 }
             };
+            
             await generateProjectReport(projectId,sectionImageProperties,companyName,reportType, reportFormat, docpath);
             const absolutePath = path.resolve(`${docpath}.${reportFormat}`);
             console.log(absolutePath);
