@@ -20,10 +20,10 @@ class ReportGeneration{
             const promises = [];
             const reportDocList = []; 
             project.data.item.projectHeader = this.getProjectHeader(reportType);
-            let projectHtml = ['projectheader.docx'];
+            
             //create project header docx
             var template;
-            
+
             var createdBy='WICR  Waterproofing & Construction';
 
             if (companyName=='Wicr') {
@@ -80,8 +80,8 @@ class ReportGeneration{
               },
             });
 
-            fs.writeFileSync('projectheader.docx', buffer);
-
+            fs.writeFileSync(`${__dirname}/projectheader.docx`, buffer);
+            let projectHtml = [`${__dirname}/projectheader.docx`];
             const orderedProjects = this.reOrderProjects(project.data.item.children);
             for (let key in orderedProjects) {
                 const promise = this.getReportDoc(orderedProjects[key],companyName,sectionImageProperties,reportType)
