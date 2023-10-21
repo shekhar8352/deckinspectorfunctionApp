@@ -7,6 +7,7 @@ const projectReports = require("../model/projectReports");
 const uploadBlob = require("../database/uploadimage");
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 require("dotenv").config();
 
 
@@ -21,6 +22,10 @@ app.http('generateReport', {
         
         
     try{
+        const outputDir = path.join(os.tmpdir(), "projectreportfiles")
+            if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir);
+            }
         const projectId = parsedData.id;
         const sectionImageProperties = parsedData.sectionImageProperties;
         const companyName = parsedData.companyName;
@@ -36,27 +41,27 @@ app.http('generateReport', {
         
             const now = new Date();
             const timestamp = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}-${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}`;
-            const docpath = `${projectName}_${reportType}_${timestamp}`;
+            const docpath = path.join(outputDir,`${projectName}_${reportType}_${timestamp}`);
             let project_id = projectId;
-                let name = projectName;
-                context.log(response);
-                let reporttimestamp = (new Date(Date.now())).toISOString();
-                projectReports.addProjectReport({
-                project_id,
-                name,
-                url:"",
-                isReportInProgress:true,
-                uploader,
-                timestamp:reporttimestamp
-                },function(err,result){
-                    if (err) { 
-                        context.log(err)
-                    }
-                    if (result){
-                        projectReportId = result.insertedId;
-                        context.log(result)
-                    }
-                });
+            let name = projectName;
+            context.log(response);
+            let reporttimestamp = (new Date(Date.now())).toISOString();
+            projectReports.addProjectReport({
+            project_id,
+            name,
+            url:"",
+            isReportInProgress:true,
+            uploader,
+            timestamp:reporttimestamp
+            },function(err,result){
+                if (err) { 
+                    context.log(err)
+                }
+                if (result){
+                    projectReportId = result.insertedId;
+                    context.log(result)
+                }
+            });
             context.res= {
                 headers: {
                     'Content-Type': 'application/json'
