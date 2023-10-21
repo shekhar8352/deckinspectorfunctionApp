@@ -27,11 +27,11 @@ class ReportGeneration{
             var createdBy='WICR  Waterproofing & Construction';
 
             if (companyName=='Wicr') {
-                var templatePath = `${__dirname}/WicrProjectHeader.docx`;
+                var templatePath = `${__dirname}\WicrProjectHeader.docx`;
                 template = fs.readFileSync(templatePath);
             }else{
                 createdBy ='E3 Inspection Reporting Solutions.';
-                template = fs.readFileSync('DeckProjectHeader.docx');
+                template = fs.readFileSync(`${__dirname}\DeckProjectHeader.docx`);
             }
             
             var createdAtString = project.data.item.createdat;
@@ -80,8 +80,8 @@ class ReportGeneration{
               },
             });
 
-            fs.writeFileSync(`${__dirname}/projectheader.docx`, buffer);
-            let projectHtml = [`${__dirname}/projectheader.docx`];
+            fs.writeFileSync(`${__dirname}\projectheader.docx`, buffer);
+            let projectHtml = [`${__dirname}\projectheader.docx`];
             const orderedProjects = this.reOrderProjects(project.data.item.children);
             for (let key in orderedProjects) {
                 const promise = this.getReportDoc(orderedProjects[key],companyName,sectionImageProperties,reportType)
