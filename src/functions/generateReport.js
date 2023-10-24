@@ -9,12 +9,22 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 require("dotenv").config();
-
-
 mongo.Connect();
 app.http('generateReport', {
-    methods: ['GET', 'POST'],
-    authLevel: 'anonymous',
+    
+    trigger:{
+        methods: [ 'POST'],
+        authLevel: 'anonymous',
+        name: "generateReport",
+        type: "httpTrigger",
+        direction: "in",
+    },
+    return:{
+        type: "http",
+        direction: "out",
+        name: "res"
+    },
+    
     handler: async (req,  context) => {
         context.log(`Http function processed request for url "${req.url}"`);
         context.log(context );
@@ -50,6 +60,7 @@ app.http('generateReport', {
             project_id,
             name,
             url:"",
+            reportType,
             isReportInProgress:true,
             uploader,
             timestamp:reporttimestamp
@@ -58,7 +69,12 @@ app.http('generateReport', {
                     context.log(err)
                 }
                 if (result){
-                    projectReportId = result.insertedId;
+                    if (result._id===undefined) {
+                        projectReportId = result.insertedId;
+                    }else{
+                        projectReportId = result._id;
+                    }
+                    
                     context.log(result)
                 }
             });
