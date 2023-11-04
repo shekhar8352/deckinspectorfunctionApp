@@ -51,7 +51,7 @@ class ReportGeneration{
             },
             additionalJsContext: {
                 tile: async () => {
-                    var projurl = project.data.item.url===''?'https://deckinspectors.blob.core.windows.net/testproject/deck_logo.jpg':
+                    var projurl = project.data.item.url===''?'https://deckinspectorsappdata.blob.core.windows.net/highlandmountainshadow/image_1.png':
                     project.data.item.url;
 
                     var urlArray = projurl.toString().split('/');
