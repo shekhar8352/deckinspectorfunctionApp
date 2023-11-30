@@ -8,13 +8,13 @@ const dbName = "DeckInspectors";
 function getDBConnectionString(){
     return uri;
 }
-var Connect = async function () {   
+var Connect = async function () {
 
     const client = new MongoClient(uri);
     try {
         // Connect to the MongoDB cluster
         await client.connect();
-       
+
         module.exports.Projects = client.db(dbName).collection('Project');
         module.exports.SubProjects = client.db(dbName).collection('SubProject');
         module.exports.Locations = client.db(dbName).collection('Location');
@@ -23,19 +23,20 @@ var Connect = async function () {
         module.exports.ProjectDocuments = client.db(dbName).collection('ProjectDocuments');
 
         module.exports.ProjectReports = client.db(dbName).collection('ProjectReports');
-        module.exports.InvasiveSections = client.db(dbName).collection('InvasiveSection');
-        module.exports.ConclusiveSections = client.db(dbName).collection('ConclusiveSection');
+        module.exports.InvasiveSections = client.db(dbName).collection('LocalInvasiveSection');
+        module.exports.ConclusiveSections = client.db(dbName).collection('LocalConclusiveSection');
         module.exports.ProjectReportHashCode = client.db(dbName).collection('ProjectReportHashCode');
+        module.exports.LocationReportHashCode = client.db(dbName).collection('LocationReportHashCode');
 
-        // //module.exports.ClientInfo = db.collection('clientInfo');       
+        // //module.exports.ClientInfo = db.collection('clientInfo');
         console.log('Connected to MongoDB');
     } catch (e) {
         console.error(e);
-    }     
-    
+    }
+
 };
 
 module.exports = {
     Connect,
-    getDBConnectionString
+    GetConnectionString: getDBConnectionString
 };
