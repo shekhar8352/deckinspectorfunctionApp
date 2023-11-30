@@ -7,6 +7,8 @@ const DocxMerger = require("docx-merger");
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const GenerateReport = require("./ReportGeneration/GenerateReport.js")
+
 
 const generateProjectReport = async function generate(projectId,sectionImageProperties,companyName,reportType,
     reportFormat, fileName)
@@ -20,38 +22,12 @@ const generateProjectReport = async function generate(projectId,sectionImageProp
             const path = await generatePdfFile(fileName,projectHtml,companyName);
             // callback( path);
         }else{
-            
-            var projectDocxList=  await getProjectDoc(project, sectionImageProperties,companyName, reportType,reportFormat);
-            var fileList=[];
-            projectDocxList.forEach(reportChunk => {
-                fileList.push(fs.readFileSync(reportChunk, 'binary'));
-            });
-            //unlink all
-            projectDocxList.forEach(filechunk=>{
-                if (fs.existsSync(filechunk)) {
-                    fs.unlinkSync(filechunk);
-                }              
-            });
-
-
-            var docx = new DocxMerger({},fileList);
-            const outputDir = path.join(os.tmpdir(), "projectreportfiles")
-            if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir);
-            }
-            const docFilePath = path.join(outputDir,`${fileName}.docx`);
-            docx.save('nodebuffer', function (data) {
-            
-                console.log('inside document save');
-                 fs.writeFileSync(`${fileName}.docx`, data);
-                //  callback(docFilePath);
-            });         
+            return await GenerateReport.generateReport(projectId,reportType);
         }
         
     }
     catch(err){
         console.log(err);
-        // callback("");
     }
 };
 
