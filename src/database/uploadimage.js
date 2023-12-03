@@ -37,7 +37,7 @@ async function uploadFile(containerName, blobName, localFileWithPath, uploadOpti
   
 
   const containerClient = blobServiceClientOld.getContainerClient(containerName);
-  blobName= blobName.replace('%20',' ');
+  blobName= blobName.replaceAll('%20',' ');
   const blobClient = containerClient.getBlobClient(blobName);
   
   // Get blob content from position 0 to the end
@@ -54,7 +54,7 @@ async function getBlobBuffer(blobName,containerName) {
   const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.STORAGE_CONNECTION_STRING);
 
   const containerClient = blobServiceClient.getContainerClient(containerName);
-  blobName= blobName.replace('%20',' ');
+  blobName= blobName.replaceAll('%20',' ');
   const blobClient = containerClient.getBlobClient(blobName);
   
   // Get blob content from position 0 to the end
@@ -62,6 +62,7 @@ async function getBlobBuffer(blobName,containerName) {
   const downloadBlockBlobResponse = await blobClient.download();
   const downloaded = (
     await streamToBuffer(downloadBlockBlobResponse.readableStreamBody)
+
   );
   
   

@@ -62,13 +62,14 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
           await Promise.all(newSections.map(async (section, index) => {
             const sectionData =  await sections.getSectionById(section._id);
             const invasiveSectionData = await invasiveSections.getInvasiveSectionByParentId(section._id);
+            const conclusiveSectionData = await conclusiveSections.getConclusiveSectionByParentId(section._id);
             if(sectionData.data && sectionData.data.item)
             {
               var sectionDocValues;
 
-              if (reportType===ProjectReportType.INVASIVEONLY) {
+              if (reportType===ProjectReportType.INVASIVEONLY ) {
                 if (invasiveSectionData.data && invasiveSectionData.data.item) {
-                  const conclusiveSectionData = await conclusiveSections.getConclusiveSectionByParentId(section._id);
+                  
                   if (conclusiveSectionData.data && conclusiveSectionData.data.item) {
                     sectionDocValues = {
                       isUnitUnavailable: sectionData.data.item.unitUnavailable?'true':'false',
@@ -107,6 +108,7 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
                   }
                 }else{
                   if (invasiveSectionData.data && invasiveSectionData.data.item) {
+                    if (conclusiveSectionData.data && conclusiveSectionData.data.item) {
                     sectionDocValues = {
                       isUnitUnavailable: sectionData.data.item.unitUnavailable?'true':'false',
                       reportType : reportType,
@@ -124,12 +126,43 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
                       eee:sectionData.data.item.eee,
                       lbc:sectionData.data.item.lbc,
                       awe:sectionData.data.item.awe,
-                      images:sectionData.data.item.images,
-                      furtherInvasiveRequired: false,
+                      images:sectionData.data.item.images,                      
                       invasiveDesc: invasiveSectionData.data.item.invasiveDescription,
-                      invasiveImages : invasiveSectionData.data.item.invasiveimages,   
-                      invasiverepairsinspectedandcompleted:false
+                      invasiveImages : invasiveSectionData.data.item.invasiveimages,     
+                      furtherInvasiveRequired: invasiveSectionData.data.item.postinvasiverepairsrequired?'true':'false',                   
+                      conclusiveImages : conclusiveSectionData.data.item.conclusiveimages,
+                      propowneragreed:conclusiveSectionData.data.item.propowneragreed?'true':'false',
+                      conclusiveadditionalconsiderations:conclusiveSectionData.data.item.conclusiveconsiderations,
+                      conclusiveeee:conclusiveSectionData.data.item.eeeconclusive,
+                      conclusivelbc:conclusiveSectionData.data.item.lbcconclusive,
+                      conclusiveawe:conclusiveSectionData.data.item.aweconclusive,
+                      invasiverepairsinspectedandcompleted:conclusiveSectionData.data.item.invasiverepairsinspectedandcompleted?'true':'false',
                       };
+                    }else{
+                      sectionDocValues = {
+                        isUnitUnavailable: sectionData.data.item.unitUnavailable?'true':'false',
+                        reportType : reportType,
+                        buildingName: subprojectName,
+                        parentType: locationType,
+                        parentName: location.data.item.name,
+                        name: sectionData.data.item.name,
+                        exteriorelements: sectionData.data.item.exteriorelements.toString().replaceAll(',',', '),
+                        waterproofing:sectionData.data.item.waterproofingelements.toString().replaceAll(',',', '),
+                        visualreview:sectionData.data.item.visualreview,
+                        signsofleak : sectionData.data.item.visualsignsofleak=='True'?'Yes':'No',
+                        furtherinvasive:sectionData.data.item.furtherinvasivereviewrequired=='True'?'Yes':'No',
+                        conditionalassesment:sectionData.data.item.conditionalassessment=='Futureinspection'?'Future Inspection':sectionData.data.item.conditionalassessment,
+                        additionalconsiderations:sectionData.data.item.additionalconsiderations,
+                        eee:sectionData.data.item.eee,
+                        lbc:sectionData.data.item.lbc,
+                        awe:sectionData.data.item.awe,
+                        images:sectionData.data.item.images,
+                        furtherInvasiveRequired: false,
+                        invasiveDesc: invasiveSectionData.data.item.invasiveDescription,
+                        invasiveImages : invasiveSectionData.data.item.invasiveimages,                       
+                        invasiverepairsinspectedandcompleted:'false'
+                      };
+                    }
                   }else{
                     sectionDocValues = {
                       isUnitUnavailable: sectionData.data.item.unitUnavailable?'true':'false',

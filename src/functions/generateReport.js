@@ -104,7 +104,7 @@ app.http('generateReport', {
             var result = await uploadBlob.uploadFile(newContainerName, newfileName, absolutePath, uploadOptions);
             var response = JSON.parse(result);
             if (response.error) {
-                responseError = new ErrorResponse(500, 'Internal server error', result.error);
+                //responseError = new ErrorResponse(500, 'Internal server error', result.error);
                 context.log(response);
                 // res.status(500).json(responseError);
                 return;
@@ -124,7 +124,7 @@ app.http('generateReport', {
                             context.log(err)
                         }
                         if (result){
-                            context.log(result)
+                            //context.log(result)
                         }
                     });
                 context.log(projectId);
