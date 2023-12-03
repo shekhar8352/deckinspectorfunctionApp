@@ -6,9 +6,11 @@ const Role = require('./role');
 
 
 var addProjectReport = async function (projectReport, callback) {
-    var result = await mongo.ProjectReports.findOne({ 'project_id': projectReport.project_id, 'reportType': projectReport.reportType });
+    var result = await mongo.ProjectReports.findOne({ 'project_id': projectReport.project_id,
+     'reportType': projectReport.reportType });
     if (result) {
-         var updateReult = await mongo.ProjectReports.updateOne({ project_id: projectReport.project_id }, { $set: projectReport },{upsert:true});
+         var updateReult = await mongo.ProjectReports.updateOne({ _id: result._id },
+             { $set: projectReport },{upsert:true});
         if (updateReult.modifiedCount=1) {
             callback(null, result);
         }
