@@ -59,6 +59,16 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
             return "";
           }
           const newSections = mysections.filter(section =>  isSectionIncluded(reportType, section));
+          newSections.sort(function(section1,section2){
+            
+            if (section1.sequenceNo==null) {
+                return section1._id-section2._id;
+            }else{
+                return (section1.sequenceNo-section2.sequenceNo);
+            }
+            
+        });
+          
           await Promise.all(newSections.map(async (section, index) => {
             const sectionData =  await sections.getSectionById(section._id);
             const invasiveSectionData = await invasiveSections.getInvasiveSectionByParentId(section._id);
@@ -104,7 +114,7 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
                       };
                   }
                   var filename = await getLocationDoc(sectionData.data.item._id,template,sectionDocValues) ;
-                  sectionDataDoc.push(filename);  
+                  sectionDataDoc[index]= filename;  
                   }
                 }else{
                   if (invasiveSectionData.data && invasiveSectionData.data.item) {
@@ -209,7 +219,17 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
             return "";
           }
           const newSections = mysections.filter(section =>  isSectionIncluded(reportType, section));
-          
+          newSections.sort(function(section1,section2){
+            
+            if (section1.sequenceNo==null) {
+
+                return section1._id-section2._id;
+            }else{
+                return (section1.sequenceNo-section2.sequenceNo);
+            }
+            
+        });
+       
           await Promise.all(newSections.map(async (section, index) => {
           const sectionData =  await sections.getSectionById(section._id);
           
@@ -228,11 +248,7 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
                 name: sectionData.data.item.name,                  
               };
             }else{
-                // var htmlData = `<meta charset="UTF-8">
-                // <body>
-                // <p>${sectionData.data.item.additionalconsiderations}</p>
-                // </body>
-                // `;
+                
                 sectionDocValues = {
                   isUnitUnavailable: sectionData.data.item.unitUnavailable?'true':'false',
                   reportType : reportType,
@@ -256,7 +272,7 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
               };
             }
             var filename = await getLocationDoc(sectionData.data.item._id,template,sectionDocValues) ;
-            sectionDataDoc.push(filename);
+            sectionDataDoc[index]=filename;
         }
         }));
         return sectionDataDoc;
