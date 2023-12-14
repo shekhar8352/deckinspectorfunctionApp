@@ -61,7 +61,7 @@ const generateDocReportForLocation = async function (locationId,companyName, sec
           const newSections = mysections.filter(section =>  isSectionIncluded(reportType, section));
           newSections.sort(function(section1,section2){
             
-            if (section1.sequenceNo==null) {
+            if (section1.sequenceNo===null||section1.sequenceNo===undefined) {
                 return section1._id-section2._id;
             }else{
                 return (section1.sequenceNo-section2.sequenceNo);

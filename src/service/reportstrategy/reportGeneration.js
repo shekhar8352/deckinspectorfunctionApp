@@ -155,7 +155,7 @@ class ReportGeneration{
         }
         subProjects.sort(function(subProj1,subProj2){
             console.log(subProj1.sequenceNo);
-            if (subProj1.sequenceNo==null) {
+            if (subProj1.sequenceNo===null||subProj1.sequenceNo===undefined) {
                 return subProj1._id-subProj2._id;
             }else{
                 return (subProj1.sequenceNo-subProj2.sequenceNo);
@@ -164,7 +164,7 @@ class ReportGeneration{
         });
         locations.sort(function(loc1,loc2){
             console.log(loc1.sequenceNo);
-            if (loc1.sequenceNo==null) {
+            if (loc1.sequenceNo===null||loc1.sequenceNo===undefined) {
                 return (loc1._id-loc2._id);
             }else{
                 return (loc1.sequenceNo-loc2.sequenceNo);
