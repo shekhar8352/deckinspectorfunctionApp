@@ -70,10 +70,10 @@ class ReportGeneration{
                   const extension  = path.extname(projurl);
                   try {
                     var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:50});
-                    return { height: 15,width: 19.8,  data: buffer, extension: extension };
+                    return { height: 15,width: 19.8,  data: buffer, extension: '.jpg' };
                   } catch (error) {
                     //console.log('An error occurred when rotating the file: ' + error);
-                    return { height: 15,width: 19.8,  data: imageBuffer, extension: extension };
+                    return { height: 15,width: 19.8,  data: imageBuffer, extension: '.jpg' };
                   }                                                  
                 },
                

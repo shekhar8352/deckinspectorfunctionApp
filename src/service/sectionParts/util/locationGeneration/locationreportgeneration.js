@@ -361,14 +361,15 @@ const getLocationDoc = async function(sectionId,template,sectionDocValues){
                 if (extension==='.HEIC') {
                   extension='.jpg';
                 }
+
                 //fix image rotation
                 try {
                   var {buffer} = await jo.rotate(Buffer.from(imagebuffer), {quality:50});
                   
-                  return { height: 6,width: 4.8,  data: buffer, extension: extension };
+                  return { height: 6,width: 4.8,  data: buffer, extension: '.jpg' };
                 } catch (error) {
                   console.log('An error occurred when rotating the file: ' + error);
-                  return { height: 6,width: 4.8,  data: imagebuffer, extension: extension };
+                  return { height: 6,width: 4.8,  data: imagebuffer, extension: '.jpg' };
                 }
                   
           } catch (error) {
