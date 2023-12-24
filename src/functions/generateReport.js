@@ -106,7 +106,9 @@ app.http('generateReport', {
             //here we will save the file on server.
             //var result = await uploadBlob.uploadFile(newContainerName, newfileName, absolutePath, uploadOptions);
             //var result = await uploadBlob.saveFileOnServer(protocol, newfileName, absolutePath, hostname);
-            const fileUrl = `${protocol}://${hostname}/${fileName}`;
+            //http://localhost:7071/api/downloadReport?name=Tiara Del Pacifica Homeowners Asssociation&type=Visual&format=docx
+            const fileUrl = `${hostname}/api/downloadReport?name=${projectName}&type=${reportType}&format=${reportFormat}`;
+            context.log(fileUrl);
             var result=  (`{"message":"${fileName} succeeded","url":"${fileUrl}"}`);
             
             var response = JSON.parse(result);
@@ -155,12 +157,12 @@ app.http('downloadReport',{
         const requestQueryParams = req.query; 
 
 // get target_site_id from the request query parameters
-        const projectNamequery = requestQueryParams.get('name');;
+        
         //const parsedData = await req.json();
         const reportType = requestQueryParams.get('type');//parsedData.reportType;
         const reportFormat = requestQueryParams.get('format');//parsedData.reportFormat;
-        const projectName = requestQueryParams.get('name');//parsedData.projectName;
-
+        let projectName = requestQueryParams.get('name');//parsedData.projectName;
+        projectName = projectName.replaceAll('%20',' ');
         const reportFileName = path.join('projectreportfiles',`${projectName}_${reportType}.${reportFormat}`);
 
 
