@@ -35,7 +35,7 @@ const generateProjectReport = async function generate(projectId,sectionImageProp
 
 
             var docx = new DocxMerger({},fileList);
-            const outputDir = path.join(os.tmpdir(), "projectreportfiles")
+            const outputDir = "projectreportfiles";
             if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir);
             }
