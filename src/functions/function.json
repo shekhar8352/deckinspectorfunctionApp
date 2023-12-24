@@ -8,6 +8,13 @@
         "authLevel": "anonymous"
       },
       {
+        "name": "req",
+        "type": "httpTrigger",
+        "direction": "in",
+        "route": "downloadReport",
+        "authLevel": "anonymous"
+      },
+      {
         "type": "http",
         "direction": "out",
         "name": "res"

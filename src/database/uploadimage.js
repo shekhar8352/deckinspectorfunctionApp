@@ -1,4 +1,7 @@
 const { BlobServiceClient } = require("@azure/storage-blob");
+const fs = require('fs');
+const path = require('path');
+
 require("dotenv").config();
 
 
@@ -32,7 +35,16 @@ async function uploadFile(containerName, blobName, localFileWithPath, uploadOpti
   }
 
 };
-
+  function saveFileOnServer(reqProtocol, blobName, localFileWithPath, hostname) {
+      
+      var fileName = path.basename(localFileWithPath);
+      var newFilePath = path.join(__dirname,"Project Reports",fileName);
+      fs.copyFileSync(localFileWithPath,newFilePath);
+          const fileUrl = `${reqProtocol}://${hostname}/${fileName}`;
+          return (`{"message":"${blobName} succeeded","url":"${fileUrl}"}`);
+        
+      
+ };
  async function getBlobBufferFromOld(blobName,containerName) {
   
 
@@ -86,6 +98,7 @@ async function streamToBuffer(readableStream) {
 module.exports = { 
   uploadFile,
   getBlobBuffer,
-  getBlobBufferFromOld
+  getBlobBufferFromOld,
+  saveFileOnServer
 };
 

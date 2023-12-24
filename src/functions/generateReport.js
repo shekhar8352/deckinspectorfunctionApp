@@ -9,6 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 require("dotenv").config();
+var mime = require('mime-types')
 mongo.Connect();
 app.http('generateReport', {
     
@@ -29,10 +30,11 @@ app.http('generateReport', {
         context.log(`Http function processed request for url "${req.url}"`);
         context.log(context );
         const parsedData = await req.json();
-        
+        const hostname = req.url.replace('/api/generateReport','');
+        const protocol =context.options.return.type;
         
     try{
-        const outputDir = path.join(os.tmpdir(), "projectreportfiles")
+        const outputDir = "projectreportfiles";
             if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir);
             }
@@ -51,7 +53,7 @@ app.http('generateReport', {
         
             const now = new Date();
             const timestamp = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}-${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}`;
-            const docpath = path.join(outputDir,`${projectName}_${reportType}_${timestamp}`);
+            const docpath = path.join(outputDir,`${projectName}_${reportType}`);
             let project_id = projectId;
             let name = projectName;
             context.log(response);
@@ -101,7 +103,12 @@ app.http('generateReport', {
             const newContainerName = containerName.replace(/\s+/g, '').toLowerCase();
             const fileName = `${projectName}_${reportType}_${timestamp}.${reportFormat}`;
             const newfileName = fileName.replace(/\s+/g, '').toLowerCase();
-            var result = await uploadBlob.uploadFile(newContainerName, newfileName, absolutePath, uploadOptions);
+            //here we will save the file on server.
+            //var result = await uploadBlob.uploadFile(newContainerName, newfileName, absolutePath, uploadOptions);
+            //var result = await uploadBlob.saveFileOnServer(protocol, newfileName, absolutePath, hostname);
+            const fileUrl = `${protocol}://${hostname}/${fileName}`;
+            var result=  (`{"message":"${fileName} succeeded","url":"${fileUrl}"}`);
+            
             var response = JSON.parse(result);
             if (response.error) {
                 //responseError = new ErrorResponse(500, 'Internal server error', result.error);
@@ -110,7 +117,8 @@ app.http('generateReport', {
                 return;
             }
             if (response.message) {
-            fs.unlinkSync(absolutePath);
+                
+                //fs.unlinkSync(absolutePath);
                 //Update images Url
                 let url = response.url;
                 //update report
@@ -137,4 +145,37 @@ app.http('generateReport', {
         //return res.status(500).send('Error generating Report');
         }
     }
+});
+
+app.http('downloadReport',{
+    methods: ['GET'],
+    authLevel: 'anonymous',
+    handler: async (req,context)=>{
+        context.log('sending report file... ')
+        const requestQueryParams = req.query; 
+
+// get target_site_id from the request query parameters
+        const projectNamequery = requestQueryParams.get('name');;
+        //const parsedData = await req.json();
+        const reportType = requestQueryParams.get('type');//parsedData.reportType;
+        const reportFormat = requestQueryParams.get('format');//parsedData.reportFormat;
+        const projectName = requestQueryParams.get('name');//parsedData.projectName;
+
+        const reportFileName = path.join('projectreportfiles',`${projectName}_${reportType}.${reportFormat}`);
+
+
+        const fileData = fs.readFileSync(reportFileName);
+        var contentType = mime.lookup(reportFileName)   
+        var responseObject = {
+            status: 200, 
+            body: fileData,
+            
+            headers: {
+                "Content-Type": contentType,
+                "Content-Disposition": `attachment; filename=${reportFileName}`                                              
+            },
+            
+        };
+        return responseObject;
+    },
 });
