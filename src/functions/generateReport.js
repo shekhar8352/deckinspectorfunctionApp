@@ -164,6 +164,7 @@ app.http('downloadReport',{
         const reportFormat = requestQueryParams.get('format');//parsedData.reportFormat;
         let projectName = requestQueryParams.get('name');//parsedData.projectName;
         projectName = projectName.replaceAll('%20',' ');
+        const attachmentName = `${projectName}_${reportType}.${reportFormat}`;
         const reportFileName = path.join( __dirname,'projectreportfiles',`${projectName}_${reportType}.${reportFormat}`);
     try {
         const fileData = await fsp.readFile(reportFileName);
@@ -174,7 +175,7 @@ app.http('downloadReport',{
             
             headers: {
                 "Content-Type": contentType,
-                "Content-Disposition": `attachment; filename=${reportFileName}`                                              
+                "Content-Disposition": `attachment; filename=${attachmentName}`                                              
             },
             
         };
