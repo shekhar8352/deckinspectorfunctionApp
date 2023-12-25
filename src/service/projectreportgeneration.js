@@ -7,6 +7,8 @@ const DocxMerger = require("docx-merger");
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+var fsp = require('fs/promises');
+
 
 const generateProjectReport = async function generate(projectId,sectionImageProperties,companyName,reportType,
     reportFormat, fileName)
@@ -40,11 +42,11 @@ const generateProjectReport = async function generate(projectId,sectionImageProp
             // fs.mkdirSync(outputDir);
             // }
             //const docFilePath = path.join(outputDir,`${fileName}.docx`);
-            docx.save('nodebuffer',  function (data) {
+            docx.save('nodebuffer', async function (data) {
                 const absolutePath = path.resolve(`${fileName}.${reportFormat}`);
                 console.log(absolutePath);
                 console.log('inside document save');
-                  fs.writeFile(absolutePath, data);
+                  await fsp.writeFile(absolutePath, data);
                 //  callback(docFilePath);     
             });         
         }
