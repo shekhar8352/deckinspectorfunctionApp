@@ -34,7 +34,7 @@ app.http('generateReport', {
         const protocol =context.options.return.type;
         
     try{
-        const outputDir = "projectreportfiles";
+        const outputDir = path.join(__dirname,"projectreportfiles");
             if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir);
             }
