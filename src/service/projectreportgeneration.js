@@ -35,16 +35,16 @@ const generateProjectReport = async function generate(projectId,sectionImageProp
 
 
             var docx = new DocxMerger({},fileList);
-            const outputDir = "projectreportfiles";
-            if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir);
-            }
-            const docFilePath = path.join(outputDir,`${fileName}.docx`);
+            // const outputDir = "projectreportfiles";
+            // if (!fs.existsSync(outputDir)) {
+            // fs.mkdirSync(outputDir);
+            // }
+            //const docFilePath = path.join(outputDir,`${fileName}.docx`);
             docx.save('nodebuffer', function (data) {
             
                 console.log('inside document save');
                  fs.writeFileSync(`${fileName}.docx`, data);
-                //  callback(docFilePath);
+                //  callback(docFilePath);  ``      
             });         
         }
         
