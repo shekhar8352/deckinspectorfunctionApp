@@ -154,7 +154,7 @@ app.http('downloadReport',{
     methods: ['GET'],
     authLevel: 'anonymous',
     handler: async (req,context)=>{
-        context.log('sending report file... ')
+        context.log('sending report file... ');
         const requestQueryParams = req.query; 
 
 // get target_site_id from the request query parameters
@@ -164,10 +164,10 @@ app.http('downloadReport',{
         const reportFormat = requestQueryParams.get('format');//parsedData.reportFormat;
         let projectName = requestQueryParams.get('name');//parsedData.projectName;
         projectName = projectName.replaceAll('%20',' ');
-        const reportFileName = path.join('projectreportfiles',`${projectName}_${reportType}.${reportFormat}`);
+        const reportFileName = path.join( __dirname,'projectreportfiles',`${projectName}_${reportType}.${reportFormat}`);
     try {
         const fileData = await fsp.readFile(reportFileName);
-        var contentType = mime.lookup(reportFileName)   
+        var contentType = mime.lookup(reportFileName)   ;
         var responseObject = {
             status: 200, 
             body: fileData,
@@ -180,13 +180,11 @@ app.http('downloadReport',{
         };
         return responseObject;
     } catch (error) {
-        context.error('Error generating Report:', err);
+        context.error('Error generating Report:', error);
+        
         var errorObject = {
             status: 500, 
-            body: {message:`Error while reading data ${error}`},
-            
-            
-            
+            body: {message:`Error while reading data ${error}`},   
         };
         return errorObject;
     }
