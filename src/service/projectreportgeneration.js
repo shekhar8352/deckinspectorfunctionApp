@@ -40,12 +40,12 @@ const generateProjectReport = async function generate(projectId,sectionImageProp
             // fs.mkdirSync(outputDir);
             // }
             //const docFilePath = path.join(outputDir,`${fileName}.docx`);
-            docx.save('nodebuffer', function (data) {
+            docx.save('nodebuffer',  function (data) {
                 const absolutePath = path.resolve(`${fileName}.${reportFormat}`);
                 console.log(absolutePath);
                 console.log('inside document save');
-                 fs.writeFileSync(absolutePath, data);
-                //  callback(docFilePath);  ``      
+                  fs.writeFile(absolutePath, data);
+                //  callback(docFilePath);     
             });         
         }
         
