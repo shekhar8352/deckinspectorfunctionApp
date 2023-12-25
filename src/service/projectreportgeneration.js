@@ -41,9 +41,10 @@ const generateProjectReport = async function generate(projectId,sectionImageProp
             // }
             //const docFilePath = path.join(outputDir,`${fileName}.docx`);
             docx.save('nodebuffer', function (data) {
-            
+                const absolutePath = path.resolve(`${fileName}.${reportFormat}`);
+                console.log(absolutePath);
                 console.log('inside document save');
-                 fs.writeFileSync(`${fileName}.docx`, data);
+                 fs.writeFileSync(absolutePath, data);
                 //  callback(docFilePath);  ``      
             });         
         }
