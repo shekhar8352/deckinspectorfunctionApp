@@ -10,6 +10,7 @@ const fs = require('fs');
 const os = require('os');
 require("dotenv").config();
 var mime = require('mime-types')
+var fsp = require('fs/promises');
 mongo.Connect();
 app.http('generateReport', {
     
@@ -166,7 +167,7 @@ app.http('downloadReport',{
         const reportFileName = path.join('projectreportfiles',`${projectName}_${reportType}.${reportFormat}`);
 
 
-        const fileData = fs.readFileSync(reportFileName);
+        const fileData = await fsp.readFile(reportFileName);
         var contentType = mime.lookup(reportFileName)   
         var responseObject = {
             status: 200, 
