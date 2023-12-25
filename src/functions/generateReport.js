@@ -165,8 +165,7 @@ app.http('downloadReport',{
         let projectName = requestQueryParams.get('name');//parsedData.projectName;
         projectName = projectName.replaceAll('%20',' ');
         const reportFileName = path.join('projectreportfiles',`${projectName}_${reportType}.${reportFormat}`);
-
-
+    try {
         const fileData = await fsp.readFile(reportFileName);
         var contentType = mime.lookup(reportFileName)   
         var responseObject = {
@@ -180,5 +179,18 @@ app.http('downloadReport',{
             
         };
         return responseObject;
+    } catch (error) {
+        context.error('Error generating Report:', err);
+        var errorObject = {
+            status: 500, 
+            body: {message:`Error while reading data ${error}`},
+            
+            
+            
+        };
+        return errorObject;
+    }
+
+        
     },
 });
