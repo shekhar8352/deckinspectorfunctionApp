@@ -15,6 +15,20 @@
         "authLevel": "anonymous"
       },
       {
+        "name": "req",
+        "type": "httpTrigger",
+        "direction": "in",
+        "route": "negotiate",
+        "authLevel": "anonymous"
+      },
+      {
+        "name": "req",
+        "type": "httpTrigger",
+        "direction": "in",
+        "route": "pushMessage",
+        "authLevel": "anonymous"
+      },
+      {
         "type": "http",
         "direction": "out",
         "name": "res"

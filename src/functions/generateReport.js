@@ -11,7 +11,14 @@ const os = require('os');
 require("dotenv").config();
 var mime = require('mime-types')
 var fsp = require('fs/promises');
+const WebSocket = require('ws');
+const { WebPubSubServiceClient } = require('@azure/web-pubsub');
+
 mongo.Connect();
+const hubName = 'reportnotificationhub';
+        const serviceClient = new WebPubSubServiceClient(process.env.AzureWebPubSub__ConnectionString, hubName);
+
+
 app.http('generateReport', {
     
     trigger:{
@@ -140,6 +147,7 @@ app.http('generateReport', {
                     });
                 context.log(projectId);
                 context.log('report uploaded');
+                broadcastMessageToHub(projectName);
             }
             // else
             //     res.status(409).json(response);      
@@ -193,3 +201,36 @@ app.http('downloadReport',{
         
     },
 });
+
+app.http('negotiate',{
+    methods: ['GET'],
+    authLevel: 'anonymous',
+    handler: async (req,context)=>{
+//         const hubName = 'reportnotificationhub';
+//         const connextioString = process.env.AzureWebPubSub__ConnectionString;
+// const serviceClient = new WebPubSubServiceClient(process.env.AzureWebPubSub__ConnectionString, hubName);
+        let token = await serviceClient.getClientAccessToken({roles: ["webpubsub.joinLeaveGroup", "webpubsub.sendToGroup"] });
+        return { body:token.url }
+    }
+});
+
+app.http('pushMessage',{
+    methods: ['GET'],
+    authLevel: 'anonymous',
+    handler: async (req,context)=>{
+        // const hubName = 'reportnotificationhub';
+        // const serviceClient = new WebPubSubServiceClient(process.env.AzureWebPubSub__ConnectionString, hubName);
+        const requestQueryParams = req.query;
+        const notificationMessageText = requestQueryParams.get('message');
+       await broadcastMessageToHub(notificationMessageText);
+    }
+});
+
+
+async function broadcastMessageToHub(projectName){
+    
+      // Send a JSON message
+      await serviceClient.sendToAll({ message: `Report for project: ${projectName} is ready, please visit reports sections to download.` });
+}
+
+
