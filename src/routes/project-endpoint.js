@@ -6,6 +6,8 @@ const ErrorResponse = require('../model/error');
 const newErrorResponse = require('../model/newError');
 const path = require('path');
 const fs = require('fs'); 
+var mime = require('mime-types')
+var fsp = require('fs/promises');
 const {generateProjectReport,getProjectHtml}= require('../service/projectreportgeneration.js');
 const {getProjectHierarchyMetadata,getSingleProjectMetadata} = require('../service/projectmetadata/getProjectMetaData.js');
 const {generateExcelForProject} = require('../service/generateExcelForProject.js');
@@ -16,6 +18,8 @@ const upload = multer({ dest: path.join(__dirname, '..') });
 const {v4 : uuidv4} = require('uuid');
 var uploadBlob = require('../database/uploadimage');
 const projectReports = require("../model/projectReports");
+const WebSocket = require('ws');
+const { WebPubSubServiceClient } = require('@azure/web-pubsub');
 
 router.route('/add')
 .post(async function (req, res) {
@@ -383,81 +387,153 @@ router.route('/getProjectMetadata/:id')
  * */
 router.route('/generatereport')
 .post(async function (req, res) {
-  try{
-  const projectId = req.body.id;
-  const sectionImageProperties = req.body.sectionImageProperties;
-  const companyName = req.body.companyName;
-  const reportType = req.body.reportType;
-  const reportFormat = req.body.reportFormat;
-  // const requestType = req.body.requestType;
-  // const reportId = uuidv4();
-  // console.log(`reportID: ${reportId}`);
-  const projectName = req.body.projectName;
-  const uploader = req.body.user;
-  // const docpath = `${projectName}_${reportType}_${reportId}`;
   
-    const now = new Date();
-    const timestamp = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}-${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}`;
-    const docpath = `${projectName}_${reportType}_${timestamp}`;
-    res.status(200).json({message: 'Generating report'});
-    await generateProjectReport(projectId,sectionImageProperties,companyName,reportType, reportFormat, docpath);
-    const absolutePath = path.resolve(`${docpath}.${reportFormat}`);
-    console.log(absolutePath);
-    const containerName = projectName;
-    const uploadOptions = {
-      metadata: {
-          'uploader': uploader,
-      },
-      tags: {
-          'project': containerName,
-          'owner': projectName
-      }
-  };
-    const newContainerName = containerName.replace(/\s+/g, '').toLowerCase();
-    const fileName = `${docpath}.${reportFormat}`
-    var result = await uploadBlob.uploadFile(newContainerName, fileName, absolutePath, uploadOptions);
-    var response = JSON.parse(result);
-    if (response.error) {
-        responseError = new ErrorResponse(500, 'Internal server error', result.error);
-        console.log(response);
-        // res.status(500).json(responseError);
-        return;
-    }
-    if (response.message) {
-      fs.unlinkSync(absolutePath);
-        //Update images Url
-        let url = response.url;
-        let project_id = projectId;
-        let name = projectName;
-        console.log(response);
-        let timestamp = (new Date(Date.now())).toISOString();
-        projectReports.addProjectReport({
-          project_id,
-          name,
-          url,
-          uploader,
-          timestamp
-        },function(err,result){
-            if (err) { 
-                console.log(err)
+        
+        const hostname = req.headers.host;
+        const protocol = req.protocol;
+    try{
+        const outputDir = path.join("projectreportfiles");
+            if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir);
             }
-            if (result){
-                console.log(result)
+            var projectReportId;
+            const projectId = req.body.id;
+            const sectionImageProperties = req.body.sectionImageProperties;
+            const companyName = req.body.companyName;
+            const reportType = req.body.reportType;
+            const reportFormat = req.body.reportFormat;
+            // const requestType = req.body.requestType;
+            // const reportId = uuidv4();
+            // console.log(`reportID: ${reportId}`);
+            const projectName = req.body.projectName;
+            const uploader = req.body.user;
+        // const docpath = `${projectName}_${reportType}_${reportId}`;
+        
+            const now = new Date();
+            const timestamp = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}-${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}`;
+            const docpath = path.join(outputDir,`${projectName}_${reportType}`);
+            let project_id = projectId;
+            let name = projectName;
+            console.log(response);
+            let reporttimestamp = (new Date(Date.now())).toISOString();
+            projectReports.addProjectReport({
+            project_id,
+            name,
+            url:"",
+            reportType,
+            isReportInProgress:true,
+            uploader,
+            timestamp:reporttimestamp
+            },function(err,result){
+                if (err) { 
+                    console.log(err)
+                }
+                if (result){
+                    if (result._id===undefined) {
+                        projectReportId = result.insertedId;
+                    }else{
+                        projectReportId = result._id;
+                    }
+                    
+                    console.log(result)
+                }
+            });
+            res.status(200).send('Generating report');
+                       
+            await generateProjectReport(projectId,sectionImageProperties,companyName,reportType, reportFormat, docpath);
+            const absolutePath = path.resolve(`${docpath}.${reportFormat}`);
+            console.log(absolutePath);
+            const containerName = projectName;
+            const uploadOptions = {
+            metadata: {
+                'uploader': uploader,
+            },
+            tags: {
+                'project': containerName,
+                'owner': projectName
             }
-        });
-        console.log(projectId);
-        console.log('report uploaded');
-    }
-    // else
-    //     res.status(409).json(response);
+        };
+            const newContainerName = containerName.replace(/\s+/g, '').toLowerCase();
+            const fileName = `${projectName}_${reportType}_${timestamp}.${reportFormat}`;
+            const newfileName = fileName.replace(/\s+/g, '').toLowerCase();
+            //here we will save the file on server.
+            //var result = await uploadBlob.uploadFile(newContainerName, newfileName, absolutePath, uploadOptions);
+            
+            //http://localhost:7071/api/downloadReport?name=Tiara Del Pacifica Homeowners Asssociation&type=Visual&format=docx
+             const fileUrl = `${protocol}://${hostname}/api/downloadReport?name=${projectName}&type=${reportType}&format=${reportFormat}`;
+            console.log(fileUrl);
+            var result=  (`{"message":"${fileName} succeeded","url":"${fileUrl}"}`);
+            
+            var response = JSON.parse(result);
+            if (response.error) {
+                //responseError = new ErrorResponse(500, 'Internal server error', result.error);
+                console.log(response);
+                // res.status(500).json(responseError);
+                return;
+            }
+            if (response.message) {
+                
+                //fs.unlinkSync(absolutePath);
+                //Update images Url
+                let url = response.url;
+                //update report
+                projectReports.updateProjectReport({
+                    _id:projectReportId,
+                    project_id,                   
+                    url,
+                    isReportInProgress:false                   
+                    },function(err,result){
+                        if (err) { 
+                            console.log(err)
+                        }
+                        if (result){
+                            console.log(result)
+                        }
+                    });
+                console.log(projectId);
+                console.log('report uploaded');
+                //broadcastMessageToHub(projectName);
+            }
+            // else
+            //     res.status(409).json(response);      
+        } catch (err) {
+            console.error('Error generating Report:', err);
+        //return res.status(500).send('Error generating Report');
+        }
+    });
+
+
+router.route('/downloadReport')
+    .get(async function(req,res){   
+      console.log('sending report file... ');
+      const requestQueryParams = req.query; 
+
+// get target_site_id from the request query parameters
       
-  
-  
-} catch (err) {
-  console.error('Error generating Report:', err);
-  //return res.status(500).send('Error generating Report');
-}
+      //const parsedData = await req.json();
+      const reportType = requestQueryParams.type;
+      const reportFormat = requestQueryParams.format;
+      let projectName = requestQueryParams.name;
+      projectName = projectName.replaceAll('%20',' ');
+      const attachmentName = `${projectName}_${reportType}.${reportFormat}`;
+      const reportFileName = path.join('projectreportfiles',`${projectName}_${reportType}.${reportFormat}`);
+  try {
+      // const fileData = await fsp.readFile(reportFileName);
+      // var contentType = mime.lookup(reportFileName);
+      res.download(reportFileName, 'user-facing-filename.pdf', (err) => {
+        if (err) {
+          console.log(err);
+          //publish message
+        } else {
+          //publish succes message
+        }
+      });
+  } catch (error) {
+    console.error('Error generating Report:', error);
+    res.status(500).send({message:`Error while reading data ${error}`});
+  }  
 });
+//server to client communication.
 
 router.route('/generatereporthtml').post(async function (req, res) {
   try {

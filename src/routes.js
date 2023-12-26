@@ -9,7 +9,7 @@ var locationRouter = require("./routes/location-endpoint");
 var sectionRouter = require("./routes/section-endpoint");
 var invasivesectionRouter = require("./routes/invasivesection-endpoint");
 var conclusiveSectionRouter = require("./routes/conclusivesection-endpoint");
-
+var pubsubRouter = require("./routes/pubsub-endpoint");
 module.exports = function(app) {
   app.use(express.json());
   app.use("/api/user", userRouter);
@@ -22,4 +22,5 @@ module.exports = function(app) {
   app.use("/api/section", sectionRouter);
   app.use("/api/invasivesection", invasivesectionRouter);
   app.use("/api/conclusivesection", conclusiveSectionRouter);
+  app.use("/api/pubsub", pubsubRouter);
 };

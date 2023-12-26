@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "func start",
+    "start": "node index.js",
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
@@ -40,5 +40,5 @@
     "swagger-ui-express": "^4.6.0",
     "uuid": "^9.0.1"
   },
-  "main": "src/functions/*.js"
+  "main": "index.js"
 }
