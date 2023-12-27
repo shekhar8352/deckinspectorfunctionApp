@@ -520,7 +520,7 @@ router.route('/downloadReport')
   try {
       // const fileData = await fsp.readFile(reportFileName);
       // var contentType = mime.lookup(reportFileName);
-      res.download(reportFileName, 'user-facing-filename.pdf', (err) => {
+      res.download(reportFileName, attachmentName, (err) => {
         if (err) {
           console.log(err);
           //publish message
