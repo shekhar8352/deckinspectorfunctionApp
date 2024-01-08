@@ -41,6 +41,14 @@ var getUser = async function (emailId, callback) {
     
 };
 
+var getEmailIdByUserName = async function(username){
+    var result = await mongo.Users.findOne({ username: username }); 
+    if (result) {
+       return result.email;
+    }
+    return "abhinovpankaj1@gmail.com";
+};
+
 var getUserbyUsername = async function (username, callback) {
     
     if (username===undefined) {
@@ -120,5 +128,6 @@ module.exports = {
     getAllUser: getAllUser,
     removeUser: removeUser,
     getUserbyUsername,
-    updateUser
+    updateUser,
+    getEmailIdByUserName
 };

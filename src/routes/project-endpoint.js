@@ -20,7 +20,8 @@ var uploadBlob = require('../database/uploadimage');
 const projectReports = require("../model/projectReports");
 const WebSocket = require('ws');
 const { WebPubSubServiceClient } = require('@azure/web-pubsub');
-
+const users = require("../model/user.js");
+const emailService = require("../service/emailService.js");
 router.route('/add')
 .post(async function (req, res) {
   try {
@@ -490,9 +491,15 @@ router.route('/generatereport')
                             console.log(result)
                         }
                     });
-                console.log(projectId);
-                console.log('report uploaded');
-                //broadcastMessageToHub(projectName);
+                // console.log(projectId);
+                // console.log('report uploaded');
+                broadcastMessageToHub(projectName);
+                //send email.
+                var emailId = await users.getEmailIdByUserName(uploader);
+                await emailService.sendEmail(`${projectName}'s ${reportType} report is ready`,'abhinovpankaj1@gmail.com',
+                `Hi,
+                 The ${reportType} report for Project ${projectName} is ready. Please download it from the reports sections or click on the below url.
+                 ${url.replaceAll(' ','%20')}`);
             }
             // else
             //     res.status(409).json(response);      
@@ -605,5 +612,11 @@ router.route('/replacefinalreporttemplate')
   }
 })
 
+async function broadcastMessageToHub(projectName){
+  const hubName = 'reportnotificationhub';
+  const serviceClient = new WebPubSubServiceClient(process.env.WebPubSubConnectionString, hubName);
+  // Send a JSON message
+  await serviceClient.sendToAll({ message: `Report for project: ${projectName} is ready, please visit reports sections to download.` });
+}
 
 module.exports = router;
