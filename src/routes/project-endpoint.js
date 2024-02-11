@@ -461,8 +461,9 @@ router.route('/generatereport')
             //var result = await uploadBlob.uploadFile(newContainerName, newfileName, absolutePath, uploadOptions);
             
             //http://localhost:7071/api/downloadReport?name=Tiara Del Pacifica Homeowners Asssociation&type=Visual&format=docx
-             const fileUrl = `https://${hostname}/api/project/downloadReport?name=${projectName}&type=${reportType}&format=${reportFormat}`;
+             const fileUrl = (`https://${hostname}/api/project/downloadReport?name=${encodeURIComponent(projectName)}&type=${reportType}&format=${reportFormat}`);
             console.log(fileUrl);
+
             var result=  (`{"message":"${fileName} succeeded","url":"${fileUrl}"}`);
             
             var response = JSON.parse(result);
