@@ -40,6 +40,7 @@ class ReportGeneration{
             template,
             data: {
                 project:{
+                    footerText:'www.google.com', //replace with the tenants website
                     reportType: reportType,
                     name: project.data.item.name,
                     address: project.data.item.address,
@@ -74,6 +75,33 @@ class ReportGeneration{
                   } catch (error) {
                     //console.log('An error occurred when rotating the file: ' + error);
                     return { height: 15,width: 19.8,  data: imageBuffer, extension: '.jpg' };
+                  }                                                  
+                },
+                headertile: async () => {
+                    //replace this URL with the tenants header URL.
+                    var projurl = project.data.item.url===''?'https://deckinspectorsappdata.blob.core.windows.net/highlandmountainshadow/image_1.png':
+                    project.data.item.url;
+
+                    var urlArray = projurl.toString().split('/');
+                    var imageBuffer ;
+                    if (projurl.includes('deckinspectorsappdata')) {
+                        imageBuffer = await blobManager.getBlobBuffer(urlArray[urlArray.length-1],urlArray[urlArray.length-2]);
+                    }else{
+                        imageBuffer = await blobManager.getBlobBufferFromOld(urlArray[urlArray.length-1],urlArray[urlArray.length-2]);
+                    }
+                    
+                    if (imageBuffer===undefined) {
+                      console.log('Failed to load image .');
+                      return;
+                    }
+                  
+                  const extension  = path.extname(projurl);
+                  try {
+                    var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:50});
+                    return { height: 2.5,width: 3,  data: buffer, extension: '.jpg' };
+                  } catch (error) {
+                    //console.log('An error occurred when rotating the file: ' + error);
+                    return { height: 2.5,width: 3,  data: imageBuffer, extension: '.jpg' };
                   }                                                  
                 },
                

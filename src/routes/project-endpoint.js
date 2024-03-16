@@ -413,6 +413,7 @@ router.route('/generatereport')
             const now = new Date();
             const timestamp = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}-${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}`;
             const docpath = path.join(outputDir,`${projectName}_${reportType}`);
+            
             let project_id = projectId;
             let name = projectName;
             console.log(response);
@@ -448,12 +449,12 @@ router.route('/generatereport')
             const uploadOptions = {
             metadata: {
                 'uploader': uploader,
-            },
-            tags: {
-                'project': containerName,
-                'owner': projectName
-            }
-        };
+              },
+              tags: {
+                  'project': containerName,
+                  'owner': projectName
+              }
+            };
             const newContainerName = containerName.replace(/\s+/g, '').toLowerCase();
             const fileName = `${projectName}_${reportType}_${timestamp}.${reportFormat}`;
             const newfileName = fileName.replace(/\s+/g, '').toLowerCase();
