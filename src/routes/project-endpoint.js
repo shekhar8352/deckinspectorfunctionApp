@@ -418,7 +418,7 @@ router.route('/generatereport')
     var result = await uploadBlob.uploadFile(newContainerName, fileName, absolutePath, uploadOptions);
     var response = JSON.parse(result);
     if (response.error) {
-        responseError = new ErrorResponse(500, 'Internal server error', result.error);
+        //var responseError = new ErrorResponse(500, 'Internal server error', result.error);
         console.log(response);
         // res.status(500).json(responseError);
         return;
