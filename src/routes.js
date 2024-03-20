@@ -10,13 +10,15 @@ var sectionRouter = require("./routes/section-endpoint");
 var invasivesectionRouter = require("./routes/invasivesection-endpoint");
 var conclusiveSectionRouter = require("./routes/conclusivesection-endpoint");
 var pubsubRouter = require("./routes/pubsub-endpoint");
+const jwt = require('jsonwebtoken');
+
 module.exports = function(app) {
   app.use(express.json());
   app.use("/api/user", userRouter);
   app.use("/api/projectdocuments", projectDocumentsRouter);  
   app.use("/api/projectreports", projectReportsRouter);  
   app.use("/api/image", imageRouter);  
-  app.use("/api/project", projectRouter);
+  app.use("/api/project", authenticateToken, projectRouter);
   app.use("/api/subproject", subprojectRouter);
   app.use("/api/location", locationRouter);
   app.use("/api/section", sectionRouter);
@@ -24,3 +26,20 @@ module.exports = function(app) {
   app.use("/api/conclusivesection", conclusiveSectionRouter);
   app.use("/api/pubsub", pubsubRouter);
 };
+
+function authenticateToken(req, res, next) {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized: Token not provided' });
+  }
+
+  jwt.verify(token, process.env.TOKEN_KEY, (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: 'Unauthorized: Invalid token' });
+    }
+
+    req.user = user;  // Attach user information to the request object
+    next();
+  });
+}
