@@ -22,6 +22,7 @@ const WebSocket = require('ws');
 const { WebPubSubServiceClient } = require('@azure/web-pubsub');
 const users = require("../model/user.js");
 const emailService = require("../service/emailService.js");
+var tenantService = require('../service/tenantService');
 router.route('/add')
 .post(async function (req, res) {
   try {
@@ -496,6 +497,20 @@ router.route('/generatereport')
                 // console.log(projectId);
                 // console.log('report uploaded');
                 broadcastMessageToHub(projectName);
+                try{
+                  const reportFileStats = fs.statSync(absolutePath);
+                  const reportFileSize = reportFileStats.size;
+                  const companyIdentifier = req.user.company;
+                  
+                  const result = tenantService.editTenant(companyIdentifier, reportFileSize);
+                  if (result.reason){
+                    console.log(result);
+                  }
+                  //update size in tenant
+                }
+                catch(ex){
+                  console.log(`Exception: ${ex}`);
+                }
                 //send email.
                 var emailId = await users.getEmailIdByUserName(uploader);
                 await emailService.sendEmail(`${projectName}'s ${reportType} report is ready`,emailId,
