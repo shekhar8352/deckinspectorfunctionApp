@@ -26,7 +26,10 @@ const generateProjectReport = async function generate(projectId,sectionImageProp
             var projectDocxList=  await getProjectDoc(project, sectionImageProperties,companyName, reportType,reportFormat);
             var fileList=[];
             projectDocxList.forEach(reportChunk => {
-                fileList.push(fs.readFileSync(reportChunk, 'binary'));
+                if (reportChunk!==undefined) {
+                    fileList.push(fs.readFileSync(reportChunk, 'binary'));
+                }
+                
             });
             //unlink all
             projectDocxList.forEach(filechunk=>{
