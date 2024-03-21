@@ -483,7 +483,8 @@ router.route('/generatereport')
                 //update report
                 projectReports.updateProjectReport({
                     _id:projectReportId,
-                    project_id,                   
+                    project_id,
+                    fileName,                   
                     url,
                     isReportInProgress:false                   
                     },function(err,result){
