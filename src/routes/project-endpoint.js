@@ -401,7 +401,7 @@ router.route('/generatereport')
             var projectReportId;
             const projectId = req.body.id;
             const sectionImageProperties = req.body.sectionImageProperties;
-            const companyName = req.body.companyName;
+            const companyName = req.user.company;
             const reportType = req.body.reportType;
             const reportFormat = req.body.reportFormat;
             // const requestType = req.body.requestType;

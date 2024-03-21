@@ -11,7 +11,7 @@ const docxTemplate = require('docx-templates');
 const blobManager = require("../../database/uploadimage");
 const jo = require('jpeg-autorotate');
 const os = require('os');
-
+var tenantService = require('../tenantService.js');
 class ReportGeneration{
     async generateReportDoc(project,companyName,sectionImageProperties,reportType){
         try{
@@ -25,7 +25,8 @@ class ReportGeneration{
             var template;
 
             var createdBy='WICR  Waterproofing & Construction';
-
+            var footerText='';
+            var headerImageURL ='';
             if (companyName=='Wicr') {
                 var templatePath = path.join(__dirname,'WicrProjectHeader.docx');
                 template = fs.readFileSync(templatePath);
@@ -33,14 +34,18 @@ class ReportGeneration{
                 createdBy ='E3 Inspection Reporting Solutions.';
                 template = fs.readFileSync(path.join(__dirname,'DeckProjectHeader.docx'));
             }
-            
+            var tenantDetails = await tenantService.getTenant(companyName);
+            if (tenantDetails.success) {
+                footerText = tenantDetails.tenant.website;
+                headerImageURL = tenantDetails.tenant.icons.header;
+            }
             var createdAtString = project.data.item.createdat;
             var date = new Date(createdAtString);
             const buffer = await docxTemplate.createReport({
             template,
             data: {
                 project:{
-                    footerText:'www.google.com', //replace with the tenants website
+                    footerText:  tenantDetails.tenant.website, //replace with the tenants website
                     reportType: reportType,
                     name: project.data.item.name,
                     address: project.data.item.address,
@@ -79,8 +84,8 @@ class ReportGeneration{
                 },
                 headertile: async () => {
                     //replace this URL with the tenants header URL.
-                    var projurl = project.data.item.url===''?'https://deckinspectorsappdata.blob.core.windows.net/highlandmountainshadow/image_1.png':
-                    project.data.item.url;
+                    var projurl = headerImageURL===''?'https://deckinspectorsappdata.blob.core.windows.net/highlandmountainshadow/image_1.png':
+                    headerImageURL;
 
                     var urlArray = projurl.toString().split('/');
                     var imageBuffer ;
