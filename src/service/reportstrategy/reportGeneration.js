@@ -24,20 +24,18 @@ class ReportGeneration{
             //create project header docx
             var template;
 
-            var createdBy='WICR  Waterproofing & Construction';
-            var footerText='';
+            
+            var website='';
             var headerImageURL ='';
-            if (companyName=='Wicr') {
-                var templatePath = path.join(__dirname,'WicrProjectHeader.docx');
-                template = fs.readFileSync(templatePath);
-            }else{
-                createdBy ='E3 Inspection Reporting Solutions.';
-                template = fs.readFileSync(path.join(__dirname,'DeckProjectHeader.docx'));
-            }
+            
+            var createdBy ='E3 Inspection Reporting Solutions.';
+            var template = fs.readFileSync(path.join(__dirname,'DeckProjectHeader.docx'));
+            
             var tenantDetails = await tenantService.getTenant(companyName);
             if (tenantDetails.success) {
-                footerText = tenantDetails.tenant.website;
+                website = tenantDetails.tenant.website;
                 headerImageURL = tenantDetails.tenant.icons.header;
+                createdBy =tenantDetails.tenant.name;
             }
             var createdAtString = project.data.item.createdat;
             var date = new Date(createdAtString);
@@ -45,7 +43,7 @@ class ReportGeneration{
             template,
             data: {
                 project:{
-                    footerText:  tenantDetails.tenant.website, //replace with the tenants website
+                    footerText:  website,
                     reportType: reportType,
                     name: project.data.item.name,
                     address: project.data.item.address,
