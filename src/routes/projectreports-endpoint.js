@@ -83,5 +83,34 @@ router.route('/delete')
     res.status(500).send(`Internal server error ${err}`)
   }
 });
+router.route('/download/Report')
+    .get(async function(req,res){   
+      console.log('sending report file... ');
+      const requestQueryParams = req.query; 
 
+// get target_site_id from the request query parameters
+      
+      //const parsedData = await req.json();
+      const reportType = requestQueryParams.type;
+      const reportFormat = requestQueryParams.format;
+      let projectName = requestQueryParams.name;
+      projectName = projectName.replaceAll('%20',' ');
+      const attachmentName = `${projectName}_${reportType}.${reportFormat}`;
+      const reportFileName = path.join('projectreportfiles',`${projectName}_${reportType}.${reportFormat}`);
+  try {
+      // const fileData = await fsp.readFile(reportFileName);
+      // var contentType = mime.lookup(reportFileName);
+      res.download(reportFileName, attachmentName, (err) => {
+        if (err) {
+          console.log(err);
+          //publish message
+        } else {
+          //publish succes message
+        }
+      });
+  } catch (error) {
+    console.error('Error generating Report:', error);
+    res.status(500).send({message:`Error while reading data ${error}`});
+  }  
+});
 module.exports = router ;
