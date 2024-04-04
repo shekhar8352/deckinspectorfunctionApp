@@ -73,7 +73,7 @@ class ReportGeneration{
                   
                   const extension  = path.extname(projurl);
                   try {
-                    var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:50});
+                    var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
                     return { height: 15,width: 19.8,  data: buffer, extension: '.jpg' };
                   } catch (error) {
                     //console.log('An error occurred when rotating the file: ' + error);
@@ -98,13 +98,14 @@ class ReportGeneration{
                       return;
                     }
                   
-                  const extension  = path.extname(projurl);
+                  const extension  = path.extname(projurl)
                   try {
-                    var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:50});
-                    return { height: 2.5,width: 3,  data: buffer, extension: '.jpg' };
+                    
+                    var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
+                    return { height: 2.24,width: 5.31,  data: buffer, extension: '.jpg' };
                   } catch (error) {
                     //console.log('An error occurred when rotating the file: ' + error);
-                    return { height: 2.5,width: 3,  data: imageBuffer, extension: '.jpg' };
+                    return { height: 2.24,width: 5.31,  data: imageBuffer, extension: '.jpg' };
                   }                                                  
                 },
                
