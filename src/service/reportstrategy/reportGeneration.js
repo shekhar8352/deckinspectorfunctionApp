@@ -27,7 +27,7 @@ class ReportGeneration{
             
             var website='';
             var headerImageURL ='';
-            
+            var footerImageURL ='';
             var createdBy ='E3 Inspection Reporting Solutions.';
             var template = fs.readFileSync(path.join(__dirname,'DeckProjectHeader.docx'));
             
@@ -36,6 +36,7 @@ class ReportGeneration{
                 website = tenantDetails.tenant.website;
                 headerImageURL = tenantDetails.tenant.icons.header;
                 createdBy =tenantDetails.tenant.name;
+                footerImageURL = tenantDetails.tenant.icons.footer;
             }
             var createdAtString = project.data.item.createdat;
             var date = new Date(createdAtString);
@@ -106,6 +107,34 @@ class ReportGeneration{
                   } catch (error) {
                     //console.log('An error occurred when rotating the file: ' + error);
                     return { height: 2.24,width: 5.31,  data: imageBuffer, extension: '.jpg' };
+                  }                                                  
+                },
+                footertile: async () => {
+                    //replace this URL with the tenants header URL.
+                    var projurl = footerImageURL===''?'https://deckinspectorsappdata.blob.core.windows.net/highlandmountainshadow/image_1.png':
+                    footerImageURL;
+
+                    var urlArray = projurl.toString().split('/');
+                    var imageBuffer ;
+                    if (projurl.includes('deckinspectorsappdata')) {
+                        imageBuffer = await blobManager.getBlobBuffer(urlArray[urlArray.length-1],urlArray[urlArray.length-2]);
+                    }else{
+                        imageBuffer = await blobManager.getBlobBufferFromOld(urlArray[urlArray.length-1],urlArray[urlArray.length-2]);
+                    }
+                    
+                    if (imageBuffer===undefined) {
+                      console.log('Failed to load image .');
+                      return;
+                    }
+                  
+                  const extension  = path.extname(projurl)
+                  try {
+                    
+                    var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
+                    return { height: 2.0,width: 2.3,  data: buffer, extension: '.jpg' };
+                  } catch (error) {
+                    //console.log('An error occurred when rotating the file: ' + error);
+                    return { height: 2.0,width: 2.3,  data: imageBuffer, extension: '.jpg' };
                   }                                                  
                 },
                
