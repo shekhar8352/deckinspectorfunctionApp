@@ -11,6 +11,7 @@ const docxTemplate = require('docx-templates');
 const blobManager = require("../../database/uploadimage");
 const jo = require('jpeg-autorotate');
 const os = require('os');
+const sharp = require('sharp');
 var tenantService = require('../tenantService.js');
 class ReportGeneration{
     async generateReportDoc(project,companyName,sectionImageProperties,reportType){
@@ -75,6 +76,7 @@ class ReportGeneration{
                   const extension  = path.extname(projurl);
                   try {
                     var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
+                    
                     return { height: 15,width: 19.8,  data: buffer, extension: '.jpg' };
                   } catch (error) {
                     //console.log('An error occurred when rotating the file: ' + error);
@@ -102,11 +104,30 @@ class ReportGeneration{
                   const extension  = path.extname(projurl)
                   try {
                     
-                    var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
-                    return { height: 2.24,width: 5.31,  data: buffer, extension: '.jpg' };
+                    //var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
+                    
+                    var rotatedBuffer =  sharp(imageBuffer).rotate();
+                    var imagemeta = await rotatedBuffer.metadata();
+                    var aspectRatio = (imagemeta. height / imagemeta. width );
+                    if (imagemeta.width>imagemeta.height) {
+                        
+                        var resizedheight = aspectRatio * 4.23;
+                        const resizedImage = await rotatedBuffer.resize(160,parseInt(160*aspectRatio),{fit:'outside'})
+                           .toBuffer();
+                        
+                        return { height: resizedheight,width: 4.23,  data: resizedImage, extension: '.jpg' };
+                    }else{
+                        var resizedheight = aspectRatio * 3.175;
+                        const resizedImage = await rotatedBuffer.resize(120,parseInt(120*resizedheight),{fit:'outside'})
+                            .toBuffer();
+                        
+                        return { height: resizedheight,width: 3.175,  data: resizedImage, extension: '.jpg' };
+                    }
+
                   } catch (error) {
-                    //console.log('An error occurred when rotating the file: ' + error);
-                    return { height: 2.24,width: 5.31,  data: imageBuffer, extension: '.jpg' };
+                    
+                    console.log('An error occurred when rotating the file: ' + error);
+                    
                   }                                                  
                 },
                 footertile: async () => {
@@ -128,14 +149,15 @@ class ReportGeneration{
                     }
                   
                   const extension  = path.extname(projurl)
-                  try {
+                  try {                   
+                    var rotatedBuffer =  sharp(imageBuffer).rotate();                    
+                    const resizedImage = await rotatedBuffer.resize(100,100,{fit:'outside'})
+                        .toBuffer();    
+                    return { height: resizedheight,width: 2.64,  data: resizedImage, extension: '.jpg' };
                     
-                    var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
-                    return { height: 2.0,width: 2.3,  data: buffer, extension: '.jpg' };
-                  } catch (error) {
-                    //console.log('An error occurred when rotating the file: ' + error);
-                    return { height: 2.0,width: 2.3,  data: imageBuffer, extension: '.jpg' };
-                  }                                                  
+                  } catch (error) {                    
+                    console.log('An error occurred when rotating the file: ' + error);                    
+                  }                                   
                 },
                
               },
