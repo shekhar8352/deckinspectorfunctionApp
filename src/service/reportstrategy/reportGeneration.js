@@ -31,13 +31,14 @@ class ReportGeneration{
             var footerImageURL ='';
             var createdBy ='E3 Inspection Reporting Solutions.';
             var template = fs.readFileSync(path.join(__dirname,'DeckProjectHeader.docx'));
-            
+            var showfooter=true;
             var tenantDetails = await tenantService.getTenant(companyName);
             if (tenantDetails.success) {
                 website = tenantDetails.tenant.website;
                 headerImageURL = tenantDetails.tenant.icons.header;
                 createdBy =tenantDetails.tenant.name;
                 footerImageURL = tenantDetails.tenant.icons.footer;
+                showfooter = tenantDetails.tenant.showFooterlogo;
             }
             var createdAtString = project.data.item.createdat;
             var date = new Date(createdAtString);
@@ -111,17 +112,17 @@ class ReportGeneration{
                     var aspectRatio = (imagemeta. height / imagemeta. width );
                     if (imagemeta.width>imagemeta.height) {
                         
-                        var resizedheight = aspectRatio * 4.23;
-                        const resizedImage = await rotatedBuffer.resize(160,parseInt(160*aspectRatio),{fit:'outside'})
+                        var resizedheight = aspectRatio * 3.6;
+                        const resizedImage = await rotatedBuffer.resize(140,parseInt(140*aspectRatio),{fit:'outside'})
                            .toBuffer();
                         
-                        return { height: resizedheight,width: 4.23,  data: resizedImage, extension: '.jpg' };
+                        return { height: resizedheight,width: 3.6,  data: resizedImage, extension: '.jpg' };
                     }else{
-                        var resizedheight = aspectRatio * 3.175;
-                        const resizedImage = await rotatedBuffer.resize(120,parseInt(120*resizedheight),{fit:'outside'})
+                        var resizedheight = aspectRatio * 2.7;
+                        const resizedImage = await rotatedBuffer.resize(120,parseInt(100*resizedheight),{fit:'outside'})
                             .toBuffer();
                         
-                        return { height: resizedheight,width: 3.175,  data: resizedImage, extension: '.jpg' };
+                        return { height: resizedheight,width: 2.7,  data: resizedImage, extension: '.jpg' };
                     }
 
                   } catch (error) {
@@ -131,6 +132,9 @@ class ReportGeneration{
                   }                                                  
                 },
                 footertile: async () => {
+                    if (!showfooter) {
+                        return;
+                    }
                     //replace this URL with the tenants header URL.
                     var projurl = footerImageURL===''?'https://deckinspectorsappdata.blob.core.windows.net/highlandmountainshadow/image_1.png':
                     footerImageURL;
@@ -153,7 +157,7 @@ class ReportGeneration{
                     var rotatedBuffer =  sharp(imageBuffer).rotate();                    
                     const resizedImage = await rotatedBuffer.resize(100,100,{fit:'outside'})
                         .toBuffer();    
-                    return { height: resizedheight,width: 2.64,  data: resizedImage, extension: '.jpg' };
+                    return { height: 2.64,width: 2.64,  data: resizedImage, extension: '.jpg' };
                     
                   } catch (error) {                    
                     console.log('An error occurred when rotating the file: ' + error);                    
