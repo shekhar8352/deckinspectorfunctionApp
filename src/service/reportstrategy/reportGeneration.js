@@ -106,10 +106,11 @@ class ReportGeneration{
                   try {
                     
                     //var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
-                    
-                    var rotatedBuffer =  sharp(imageBuffer).rotate();
-                    var imagemeta = await rotatedBuffer.metadata();
-                    var aspectRatio = (imagemeta. height / imagemeta. width );
+                    var image = sharp(imageBuffer);
+                    var rotatedBuffer =  image.rotate();
+                    try {
+                        var imagemeta = await image.metadata();
+                        var aspectRatio = (imagemeta. height / imagemeta. width );
                     if (imagemeta.width>imagemeta.height) {
                         
                         var resizedheight = aspectRatio * 3.6;
@@ -119,12 +120,18 @@ class ReportGeneration{
                         return { height: resizedheight,width: 3.6,  data: resizedImage, extension: '.jpg' };
                     }else{
                         var resizedheight = aspectRatio * 2.7;
-                        const resizedImage = await rotatedBuffer.resize(120,parseInt(100*resizedheight),{fit:'outside'})
+                        const resizedImage = await rotatedBuffer.resize(120,parseInt(120*resizedheight),{fit:'outside'})
                             .toBuffer();
                         
                         return { height: resizedheight,width: 2.7,  data: resizedImage, extension: '.jpg' };
                     }
-
+                    } catch (error) {
+                        //const resizedImage = await rotatedBuffer.resize(120,100,{fit:'outside'})
+                           // .toBuffer();
+                        //var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
+                        return { height: 3.18,width: 2.7,  data: imageBuffer, extension: '.jpg' };
+                    }
+                    
                   } catch (error) {
                     
                     console.log('An error occurred when rotating the file: ' + error);
@@ -159,8 +166,11 @@ class ReportGeneration{
                         .toBuffer();    
                     return { height: 2.64,width: 2.64,  data: resizedImage, extension: '.jpg' };
                     
-                  } catch (error) {                    
-                    console.log('An error occurred when rotating the file: ' + error);                    
+                  } catch (error) {         
+
+                    console.log('An error occurred when rotating the file using sharp: ' + error);  
+                    //var {buffer} = await jo.rotate(Buffer.from(imageBuffer), {quality:100});
+                        return { height: 2.64,width: 2.64,  data: imageBuffer, extension: '.jpg' };                  
                   }                                   
                 },
                
